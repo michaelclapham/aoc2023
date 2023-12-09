@@ -25,6 +25,6 @@ sum:
     ret 8             ; Return and clean up 8 bytes of parameters from the stack
 
 end:
+    mov ebx, eax ; Return eax as exit code
     mov eax, 1
-    mov ebx, 1
     int 0x80
