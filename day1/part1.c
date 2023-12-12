@@ -1,25 +1,19 @@
 #include <stdio.h>
 
-int getLineTotal(int a);
+int getLineTotal(char *buf);
 
 int main() {
-    //FILE *fptr;
+    FILE *fptr;
 
     // Open a file in read mode
-    //fptr = fopen("input.txt", "r");
+    fptr = fopen("sample_input.txt", "r");
 
-    //char buf[200];
-    //int firstDigit = -1;
-    //int lastDigit = -1;
+    char buf[200];
+    int firstDigit = -1;
+    int lastDigit = -1;
     int total = 0;
-    //while (fgets(buf, sizeof buf, fptr) != NULL) {
-    //    total += getLineTotal(buf);
-    //}
-
-    int i = 0;
-    while (i < 6) {
-        total = getLineTotal(i);
-        i++;
+    while (fgets(buf, sizeof buf, fptr) != NULL) {
+        total += getLineTotal(buf);
     }
           
     printf("Total %i\n", total);
@@ -29,16 +23,12 @@ int main() {
     //}
 
     // Close the file
-    //fclose(fptr);
+    fclose(fptr);
 
     return 0;
 }
 
-int getLineTotal(int a) {
-    return a + 1;
-}
-
-/* int getLineTotal(char *buf) {
+int getLineTotal(char *buf) {
     int firstDigit = -1;
     int lastDigit = -1;
     int lineTotal = 0;
@@ -64,4 +54,4 @@ int getLineTotal(int a) {
         lineTotal += lastDigit;
     }
     return lineTotal;
-} */
+}

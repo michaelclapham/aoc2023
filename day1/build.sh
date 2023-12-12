@@ -1,18 +1,14 @@
 #!/bin/bash
-# Create 32 bit executable
 
-# When not using external C functions can use below
-#nasm -f elf -o first.o first.s
-#ld -m elf_i386 -o first first.o
+# Create 64 bit object file
+nasm -f elf64 -o part1.o part1.s
 
-# Using external C functions so need to link using GCC
+# Link to create 64 bit executable file
+# ld -m elf_x86_64 -o part1 part1.o
 
-# This required installing
+# Using GCC to link makes debugging with gdb easier
+# Also allows calling external C functions if needed
 # sudo apt-get install gcc gcc-multilib
-# gcc-multilib is requried for compiling 32 bit on 64 bit machine
+gcc part1.o -o part1
 
-nasm -f elf32 -o first.o first.s
-
-gcc -no-pie -m32 first.o -o first
-
-chmod a+x ./first
+chmod a+x ./part1
