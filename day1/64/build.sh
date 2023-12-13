@@ -9,6 +9,6 @@ nasm -f elf64 -o part1.o part1.s
 # Using GCC to link makes debugging with gdb easier
 # Also allows calling external C functions if needed
 # sudo apt-get install gcc gcc-multilib
-gcc part1.o -o part1
+gcc part1.o -o part1 -no-pie
 
 chmod a+x ./part1
