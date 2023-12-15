@@ -4,15 +4,22 @@ section .data
     startMsg DB "Start message",10,0
     newLineMsg DB "new line!",10,0
     digitMsg DB "digit!",10,0
-    firstDigitMsg DB "first digit!",10,0
-    secondDigitMsg DB "second digit!",10,0
+    firstDigitMsg DB "first digit! %i",10,0
+    otherDigitMsg DB "another digit! %i",10,0
     loopFmt DB "loop iteration %c",10,0
+    resultForLineMsg DB "result for line %i",10,0
+    totalMsg DB "total is %i",10,0
 
     pathname DD "../sample_input.txt"
 
     loopCounter DD 0
 
     digitsOnLine DD 0
+
+    firstDigit DD 0
+    lastDigit DD 0
+
+    total DD 0
 section .bss
     buffer: resb 21464
 section .text
@@ -69,25 +76,50 @@ check_for_digit:
     JMP onDigit
 
 onDigit:
+    ; put previous number of digits on line in ecx and eax
+    ; increment eax and save it back to digitsOnLine
     MOV ecx, [digitsOnLine]
+    MOV eax, ecx
+    INC eax
+    MOV [digitsOnLine], eax
+
     CMP ecx, 0 ; now check value before incrementing
+    MOV ecx, 0 ; set registers back to zero to not cause problems downstream
+    MOV eax, 0 ;
     JE onFirstDigit ; if = 1 then first digit
-    JMP onSecondDigit ; else second digit
+    JMP onOtherDigit ; else second digit
 
 onFirstDigit:
-    MOV ecx, [digitsOnLine]
-    INC ecx
-    MOV [digitsOnLine], ecx
-    MOV ecx, 0
+    ; subtract 48 to get int value for character
+    MOV ecx, [loopCounter]
+    MOV dl, [buffer + ecx] ; dl is now the current character in the string
+    MOV al, dl ; move into al so we can subtract from it
+    SUB al, 48 ; after this al is an 8 bit integer of the digit
+    MOVZX edx, al ; move into a 32 bit register so we can add to 32 bit total
+    MOV ecx, [total] ; fetch existing total
+    ADD ecx, edx ; add this digit to total ; todo: move this to onNewLine eventually
+    MOV [total], ecx ; move new total back into memory
 
+    PUSH edx
     PUSH firstDigitMsg
     CALL printf
 
     
     JMP loopEnd
 
-onSecondDigit:
-    PUSH secondDigitMsg
+onOtherDigit:
+    ; subtract 48 to get int value for character
+    MOV ecx, [loopCounter]
+    MOV dl, [buffer + ecx] ; dl is now the current character in the string
+    MOV al, dl ; move into al so we can subtract from it
+    SUB al, 48 ; after this al is an 8 bit integer of the digit
+    MOVZX edx, al ; move into a 32 bit register so we can add to 32 bit total
+    MOV ecx, [total] ; fetch existing total
+    ADD ecx, edx ; add this digit to total ; todo: move this to onNewLine eventually
+    MOV [total], ecx ; move new total back into memory
+
+    PUSH edx
+    PUSH otherDigitMsg
     CALL printf
     JMP loopEnd
 
@@ -109,6 +141,10 @@ loopEnd:
     JMP loop1
 
 end:
+    ; Print total 
+    PUSH totalMsg
+    CALL printf
+
     ; Exit the program
     MOV eax,1
     MOV ebx,1
