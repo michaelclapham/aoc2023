@@ -1,6 +1,6 @@
 import {readFileSync} from "fs";
 
-const input = readFileSync("./input.txt").toString();
+const input = readFileSync("../input.txt").toString();
 
 var firstDigit = -1;
 var lastDigit = -1;

@@ -11,8 +11,8 @@
 # sudo apt-get install gcc gcc-multilib
 # gcc-multilib is requried for compiling 32 bit on 64 bit machine
 
-nasm -f elf32 -o first.o first.s
+nasm -f elf32 -o part1.o part1.s
 
-gcc -no-pie -m32 first.o -o first
+gcc -no-pie -m32 part1.o -o part1
 
-chmod a+x ./first
+chmod a+x ./part1
