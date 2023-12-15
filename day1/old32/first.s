@@ -11,8 +11,10 @@ section .data
     totalMsg DB "total is %i",10,0
     oneDigitLineMsg DB "one digit line %i",10,0
     multiDigitLineMsg DB "multi digit line %i",10,0
+    eofMsg DB "we've found an EOF (end of file) character",10,0
+    zeroDigitMsg DB "zero digit line",10,0
 
-    pathname DD "../sample_input.txt"
+    pathname DD "../input.txt"
 
     loopCounter DD 0
 
@@ -24,7 +26,7 @@ section .data
     lineTotal DD 0
     total DD 0
 section .bss
-    buffer: resb 21464
+    buffer: resb 21465
 section .text
 
 global main
@@ -40,7 +42,7 @@ main:
     MOV ebx,eax
     MOV eax,3
     MOV ecx,buffer
-    MOV edx,42
+    MOV edx,21466
     INT 80h
 
     ; Print test message
@@ -60,6 +62,21 @@ loop1:
     CALL printf
     MOV edx, 0
 
+check_for_eof:
+    MOV ecx, [loopCounter]
+    MOV dl, [buffer + ecx] ; dl is now the current character in the string
+    ; dl is 8 bit register which we are using to compare against ASCII numbers
+
+    ; check if we are on a new line
+    CMP dl, 0
+    JE onEOF
+    JMP check_for_newline
+
+onEOF:
+    PUSH eofMsg
+    CALL printf
+    JMP end
+
 check_for_newline:
     MOV ecx, [loopCounter]
     MOV dl, [buffer + ecx] ; dl is now the current character in the string
@@ -73,7 +90,7 @@ check_for_digit:
     CMP dl, 48
     JLE loopEnd ; if <= 48 then not a digit, end loop
 
-    CMP dl, 57 ; if >= 57 then not a digit, end loop
+    CMP dl, 58 ; if >= 57 then not a digit, end loop
     JGE loopEnd
 
     JMP onDigit
@@ -134,12 +151,22 @@ onNewLine:
     MOV ebx, 0
     MOV [digitsOnLine], ebx
 
+    CMP ecx, 0
+    JE onZeroDigitLine
+
     ; if num on line is 1 then we should add that number x11 to total
     ; e.g firstDigit = 7, total += 77
     ; else we have a two digit number so total += firstDigit * 10 + lastDigit
     CMP ecx, 1
     JE onOneDigitLine
     JMP onMultiDigitLine
+
+onZeroDigitLine:
+    ; Print error saying zero digit line
+    PUSH zeroDigitMsg
+    CALL printf
+
+    JMP loopEnd
 
 onOneDigitLine:
     MOV eax, [firstDigit] ; move first digit into eax
@@ -179,7 +206,7 @@ loopEnd:
     MOV ecx, [loopCounter] ; move loop counter into edx so we can increment it
     INC ecx
     MOV [loopCounter], ecx ; write incremented edx back into loop counter
-    CMP ecx,42 ; finish loop if loop counter >= 42
+    CMP ecx, 21465 ; finish loop if loop counter >= inputLength
     JGE end
     JMP loop1
 

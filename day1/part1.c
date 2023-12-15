@@ -6,7 +6,7 @@ int main() {
     FILE *fptr;
 
     // Open a file in read mode
-    fptr = fopen("sample_input.txt", "r");
+    fptr = fopen("input.txt", "r");
 
     char buf[200];
     int firstDigit = -1;
@@ -18,9 +18,9 @@ int main() {
           
     printf("Total %i\n", total);
 
-    //if (feof(fptr)) {
-    //    printf("Total %i", total);
-    //}
+    if (feof(fptr)) {
+        printf("Total %i", total);
+    }
 
     // Close the file
     fclose(fptr);
