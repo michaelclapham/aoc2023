@@ -9,6 +9,8 @@ section .data
     loopFmt DB "loop iteration %c",10,0
     resultForLineMsg DB "result for line %i",10,0
     totalMsg DB "total is %i",10,0
+    oneDigitLineMsg DB "one digit line %i",10,0
+    multiDigitLineMsg DB "multi digit line %i",10,0
 
     pathname DD "../sample_input.txt"
 
@@ -19,6 +21,7 @@ section .data
     firstDigit DD 0
     lastDigit DD 0
 
+    lineTotal DD 0
     total DD 0
 section .bss
     buffer: resb 21464
@@ -96,9 +99,7 @@ onFirstDigit:
     MOV al, dl ; move into al so we can subtract from it
     SUB al, 48 ; after this al is an 8 bit integer of the digit
     MOVZX edx, al ; move into a 32 bit register so we can add to 32 bit total
-    MOV ecx, [total] ; fetch existing total
-    ADD ecx, edx ; add this digit to total ; todo: move this to onNewLine eventually
-    MOV [total], ecx ; move new total back into memory
+    MOV [firstDigit], edx ; move first digit into memory
 
     PUSH edx
     PUSH firstDigitMsg
@@ -114,9 +115,7 @@ onOtherDigit:
     MOV al, dl ; move into al so we can subtract from it
     SUB al, 48 ; after this al is an 8 bit integer of the digit
     MOVZX edx, al ; move into a 32 bit register so we can add to 32 bit total
-    MOV ecx, [total] ; fetch existing total
-    ADD ecx, edx ; add this digit to total ; todo: move this to onNewLine eventually
-    MOV [total], ecx ; move new total back into memory
+    MOV [lastDigit], edx ; move next digit into memory
 
     PUSH edx
     PUSH otherDigitMsg
@@ -127,9 +126,53 @@ onNewLine:
     PUSH newLineMsg
     CALL printf
 
-    MOV ecx, 0
-    MOV [digitsOnLine], ecx
+    ; get the number of digits on the line
+    MOV ecx, [digitsOnLine]
 
+    ; before we jump set digitsOnLine in memory back to zero
+    ; so that we don't have to do it in both branches
+    MOV ebx, 0
+    MOV [digitsOnLine], ebx
+
+    ; if num on line is 1 then we should add that number x11 to total
+    ; e.g firstDigit = 7, total += 77
+    ; else we have a two digit number so total += firstDigit * 10 + lastDigit
+    CMP ecx, 1
+    JE onOneDigitLine
+    JMP onMultiDigitLine
+
+onOneDigitLine:
+    MOV eax, [firstDigit] ; move first digit into eax
+    MOV ebx, 11 ; put 11 in ebx
+    MUL ebx ; sets eax = eax * ebx ; so eax = firstDigit * 11
+    MOV [lineTotal], eax
+
+    PUSH eax
+    PUSH oneDigitLineMsg
+    CALL printf
+
+    MOV ecx, [total] ; fetch existing total
+    MOV eax, [lineTotal]
+    ADD ecx, eax ; ecx = ecx + eax ; add line total to total
+    MOV [total], ecx ; so total += (11 * firstDigit)
+    JMP loopEnd
+
+onMultiDigitLine:
+    MOV eax, [firstDigit] ; move first digit into eax
+    MOV ebx, 10 ; put 10 in ebx
+    MUL ebx ; sets eax = eax * ebx ; so eax = firstDigit * 10
+    MOV edx, [lastDigit] ; move last digit into edx
+    ADD eax, edx ; eax = eax + edx ; this is the line total
+    MOV [lineTotal], eax
+
+    PUSH eax
+    PUSH multiDigitLineMsg
+    CALL printf
+
+    MOV eax, [lineTotal] ; fetch line total
+    MOV ecx, [total] ; fetch existing total
+    ADD ecx, eax ; ecx = ecx + eax ; add line total to final total (in register ecx)
+    MOV [total], ecx ; so total += (10 * firstDigit) + lastDigit
     JMP loopEnd
 
 loopEnd:
@@ -141,7 +184,9 @@ loopEnd:
     JMP loop1
 
 end:
-    ; Print total 
+    ; Print total
+    MOV ecx, [total] ; fetch existing total
+    PUSH ecx
     PUSH totalMsg
     CALL printf
 
