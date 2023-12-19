@@ -1,6 +1,3 @@
-/* Provides sys call number lookup */
-#include <asm/unistd.h>
-
 /* file io linux constants */
 .equ	O_RDONLY, 0
 .equ	O_WRONLY, 1
@@ -22,7 +19,7 @@ inputFilename:
     .ascii "./sample_input.txt"
 
 buffer:
-    .fill BUFFERLEN + 1, 1, 0
+    .fill BUFFER_SIZE + 1, 1, 0
 
 .text
 
@@ -36,7 +33,7 @@ main:
     ldr x1, =inputFilename
     mov x2, #O_RDONLY
 	mov x3, #S_RDWR // mode param
-    mov x8, #__NR_openat
+    mov x8, #56
     svc 0
 
     mov x11, x0 // save file handle
@@ -44,8 +41,8 @@ main:
     /* syscall read */
     mov x0, x11 // file descriptor
     ldr x1, =buffer
-    mov x2, =BUFFERLEN
-    mov x8, #__NR_read
+    mov x2, BUFFER_SIZE
+    mov x8, #63
     svc 0
 
     /* syscall write */
@@ -57,12 +54,12 @@ main:
 
     //fsync syscall
     mov x0, x11 // holds input file handle
-    mov x8, #__NR_fsync
+    mov x8, #82 // syscall 92 = fsync
     svc 0
 
     //close syscall
     mov x0, x11 // holds input file handle
-    mov x8, #__NR_close
+    mov x8, #57 // syscall 57 = close
     svc 0
 
     /* syscall exit(int status) */
