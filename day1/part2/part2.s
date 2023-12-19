@@ -6,7 +6,7 @@
 .equ	AT_FDCWD, -100
 
 /* buffer size */
-.equ	BUFFER_SIZE, 250
+.equ	BUFFER_SIZE, 92
 
 .data
 
@@ -18,7 +18,10 @@ len = . - msg
 inputFilename:
     .ascii "./sample_input.txt"
 
-buffer:
+inputBuffer:
+    .fill BUFFER_SIZE + 1, 1, 0
+
+outputBuffer:
     .fill BUFFER_SIZE + 1, 1, 0
 
 .text
@@ -39,8 +42,8 @@ main:
     mov x11, x0 // save file handle
 
     /* syscall read */
-    mov x0, x11 // file descriptor
-    ldr x1, =buffer
+    mov x0, x11 // file descriptor for input
+    ldr x1, =inputBuffer
     mov x2, BUFFER_SIZE
     mov x8, #63
     svc 0
@@ -49,6 +52,23 @@ main:
     mov x0, #1 /* file descriptor 1 = standard out = console */
     adr x1, msg
     mov x2, #12 /* Number of bytes / characters in ascii string */
+    mov x8, #64 /* syscall 64 = write */
+    svc #0
+
+copyLoop:
+    LDR	x0, =inputBuffer // set x0 to inputBuffer start address
+    LDRB w5, [x0], #1 // load character / byte from address at x0 and increment x0 to address of next character
+    LDR x1, =outputBuffer // set x1 to outputBuffer start address
+    STRB w5, [x1], #1 // store character to address at x1 and increment x1 to address of next character
+    CMP	w5, #0 // check if character is null character
+	B.NE copyLoop // loop if character isn't null
+
+end:
+
+    /* write to std-out the outputBuffer (which should be the same as file just read in) */
+    mov x0, #1 /* file descriptor 1 = standard out = console */
+    ldr x1, =outputBuffer
+    mov x2, BUFFER_SIZE /* Number of bytes / characters in ascii string */
     mov x8, #64 /* syscall 64 = write */
     svc #0
 
