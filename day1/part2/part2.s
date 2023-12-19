@@ -55,11 +55,14 @@ main:
     mov x8, #64 /* syscall 64 = write */
     svc #0
 
+    mov x2, #0 // input (and currently output) index
+
 copyLoop:
     ldr	x0, =inputBuffer // set x0 to inputBuffer start address
-    ldrb w5, [x0], #1 // load character / byte from address at x0 and increment x0 to address of next character
+    ldrb w5, [x0, x2] // load character / byte from address at x0 + x2 offset
     ldr x1, =outputBuffer // set x1 to outputBuffer start address
-    strb w5, [x1], #1 // store character to address at x1 and increment x1 to address of next character
+    strb w5, [x1, x2], #1 // store character to address at x1 + x2 offset
+    add x2, x2, #1 // increment x2 by 1
     cmp	w5, #0 // check if character is null character
 	beq end // end if character isn't null
     b copyLoop // loop otherwise
