@@ -56,10 +56,18 @@ main:
     svc #0
 
 copyLoop:
-    ldr	x0, =inputBuffer // set x0 to inputBuffer start address
-    ldrb w5, [x0], #1 // load character / byte from address at x0 and increment x0 to address of next character
-    ldr x1, =outputBuffer // set x1 to outputBuffer start address
-    strb w5, [x1], #1 // store character to address at x1 and increment x1 to address of next character
+    ldr	x9, =inputBuffer // set x0 to inputBuffer start address
+    ldrb w5, [x9], #1 // load character / byte from address at x0 and increment x0 to address of next character
+    ldr x10, =outputBuffer // set x1 to outputBuffer start address
+    strb w5, [x10], #1 // store character to address at x1 and increment x1 to address of next character
+
+    /* write to std-out the outputBuffer (which should be the same as file just read in) */
+    mov x0, #1 /* file descriptor 1 = standard out = console */
+    mov x1, x5 // print out the current character
+    mov x2, 1 /* Number of bytes / characters in ascii string */
+    mov x8, #64 /* syscall 64 = write */
+    svc #0
+    
     cmp	w5, #0 // check if character is null character
 	b.ne copyLoop // loop if character isn't null
 
