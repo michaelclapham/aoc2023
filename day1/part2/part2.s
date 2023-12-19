@@ -56,12 +56,12 @@ main:
     svc #0
 
 copyLoop:
-    LDR	x0, =inputBuffer // set x0 to inputBuffer start address
-    LDRB w5, [x0], #1 // load character / byte from address at x0 and increment x0 to address of next character
-    LDR x1, =outputBuffer // set x1 to outputBuffer start address
-    STRB w5, [x1], #1 // store character to address at x1 and increment x1 to address of next character
-    CMP	w5, #0 // check if character is null character
-	B.NE copyLoop // loop if character isn't null
+    ldr	x0, =inputBuffer // set x0 to inputBuffer start address
+    ldrb w5, [x0], #1 // load character / byte from address at x0 and increment x0 to address of next character
+    ldr x1, =outputBuffer // set x1 to outputBuffer start address
+    strb w5, [x1], #1 // store character to address at x1 and increment x1 to address of next character
+    cmp	w5, #0 // check if character is null character
+	b.ne copyLoop // loop if character isn't null
 
 end:
 
