@@ -55,7 +55,7 @@ main:
     mov x8, #64 /* syscall 64 = write */
     svc #0
 
-    mov x2, #4 // input (and currently output) index
+    mov x2, #0 // input (and currently output) index
 
 copyLoop:
     ldr	x0, =inputBuffer // set x0 to inputBuffer start address
