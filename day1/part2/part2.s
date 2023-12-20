@@ -82,7 +82,7 @@ checkTwo:
     // Increase input index by + 2 here
     // We always increase by + 1 in loopFooter
     // so 2 + 1 = length of 'two'
-    add x2, x2 #2
+    add x2, x2, #2
     // Put '2' into current character register
     mov w5, #50 // ASCII 50 = '2'.
 
