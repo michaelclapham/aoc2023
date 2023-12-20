@@ -63,9 +63,13 @@ copyLoop:
     ldr x1, =outputBuffer // set x1 to outputBuffer start address
     strb w5, [x1, x2] // store character to address at x1 + x2 offset
     add x2, x2, #1 // increment x2 by 1
+
+    // Stop looping if loop counter higher than buffer size
+    cmp x2, #BUFFER_SIZE
+    bgt end
+
     cmp	w5, #0 // check if character is null character
-	beq end // end if character isn't null
-    b end // loop always
+	beq copyLoop // end if character isn't null
 
 end:
 
