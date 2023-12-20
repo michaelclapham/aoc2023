@@ -87,8 +87,6 @@ checkTwo:
     mov w5, #50 // ASCII 50 = '2'.
 
 loopFooter:
-    ldr	x0, =inputBuffer // set x0 to inputBuffer start address
-    ldrb w5, [x0, x2] // load character / byte from address at x0 + x2 offset
     // write x5 to output buffer at output offset (x3)
     ldr x1, =outputBuffer // set x1 to outputBuffer start address
     strb w5, [x1, x3] // store character at w5 to address at x1 + x3 offset
