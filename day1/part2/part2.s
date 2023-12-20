@@ -55,14 +55,47 @@ main:
     mov x8, #64 /* syscall 64 = write */
     svc #0
 
-    mov x2, #0 // input (and currently output) index
+    mov x2, #0 // input index
+    mov x3, #0 // output index
 
-copyLoop:
+loopHeader:
     ldr	x0, =inputBuffer // set x0 to inputBuffer start address
     ldrb w5, [x0, x2] // load character / byte from address at x0 + x2 offset
+    
+checkTwo:
+    mov x4, x2 // x4 is look-ahead address
+    // let's use w6 as the look-ahead char value
+    cmp w5, #116 // check if w5 is 't'
+    bne loopFooter
+    
+    add x4, x2, #1 // look to char at + x2 + 1
+    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 1 offset
+    cmp w6, #116 // check if w6 is 'w'
+    bne loopFooter
+
+    add x4, x2, #2 // look to char at + x2 + 2
+    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 2 offset
+    cmp w6, #111 // check if w6 is 'o'
+    bne loopFooter
+    
+    // We found t,w,o
+    // Increase input index by + 2 here
+    // We always increase by + 1 in loopFooter
+    // so 2 + 1 = length of 'two'
+    add x2, x2 #2
+    // Put '2' into current character register
+    mov w5, #50 // ASCII 50 = '2'.
+
+loopFooter:
+    ldr	x0, =inputBuffer // set x0 to inputBuffer start address
+    ldrb w5, [x0, x2] // load character / byte from address at x0 + x2 offset
+    // write x5 to output buffer at output offset (x3)
     ldr x1, =outputBuffer // set x1 to outputBuffer start address
-    strb w5, [x1, x2] // store character to address at x1 + x2 offset
+    strb w5, [x1, x3] // store character at w5 to address at x1 + x3 offset
+
+    // increment both input and output positions always
     add x2, x2, #1 // increment x2 by 1
+    add x3, x3, #1 // increment x3 by 1
 
     // Stop looping if loop counter higher than buffer size
     cmp x2, #BUFFER_SIZE
@@ -70,7 +103,7 @@ copyLoop:
 
     cmp	w5, #0 // check if character is null character
 	beq end // end if character isn't null
-    b copyLoop
+    b loopHeader
 
 end:
 
