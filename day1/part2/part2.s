@@ -62,6 +62,30 @@ loopHeader:
     ldr	x0, =inputBuffer // set x0 to inputBuffer start address
     ldrb w5, [x0, x2] // load character / byte from address at x0 + x2 offset
     
+checkOne:
+    mov x4, x2 // x4 is look-ahead address
+    // let's use w6 as the look-ahead char value
+    cmp w5, #111 // check if w5 is 'o'
+    bne checkTwo
+    
+    add x4, x2, #1 // look to char at + x2 + 1
+    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 1 offset
+    cmp w6, #119 // check if w6 is 'n'
+    bne checkTwo
+
+    add x4, x2, #2 // look to char at + x2 + 2
+    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 2 offset
+    cmp w6, #101 // check if w6 is 'e'
+    bne checkTwo
+    
+    // We found o,n,e
+    // Increase input index by + 2 here
+    // We always increase by + 1 in loopFooter
+    // so 2 + 1 = length of 'one'
+    add x2, x2, #2
+    // Put '2' into current character register
+    mov w5, #49 // ASCII 50 = '1'.
+
 checkTwo:
     mov x4, x2 // x4 is look-ahead address
     // let's use w6 as the look-ahead char value
