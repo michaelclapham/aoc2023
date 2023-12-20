@@ -70,7 +70,7 @@ checkTwo:
     
     add x4, x2, #1 // look to char at + x2 + 1
     ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 1 offset
-    cmp w6, #116 // check if w6 is 'w'
+    cmp w6, #119 // check if w6 is 'w'
     bne loopFooter
 
     add x4, x2, #2 // look to char at + x2 + 2
