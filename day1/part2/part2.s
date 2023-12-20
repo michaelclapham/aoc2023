@@ -69,7 +69,8 @@ copyLoop:
     bgt end
 
     cmp	w5, #0 // check if character is null character
-	beq copyLoop // end if character isn't null
+	beq end // end if character isn't null
+    b copyLoop
 
 end:
 
