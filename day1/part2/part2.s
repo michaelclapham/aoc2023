@@ -16,31 +16,31 @@ msg:
 len = . - msg
 
 one_str:
-    .ascii "one",0
+    .asciz "one"
 
 two_str:
-    .ascii "two",0
+    .asciz "two"
 
 three_str:
-    .ascii "three",0
+    .asciz "three"
 
 four_str:
-    .ascii "four",0
+    .asciz "four"
 
 five_str:
-    .ascii "five",0
+    .asciz "five"
 
 six_str:
-    .ascii "six",0
+    .asciz "six"
 
 seven_str:
-    .ascii "seven",0
+    .asciz "seven"
 
 eight_str:
-    .ascii "eight",0
+    .asciz "eight"
 
 nine_str:
-    .ascii "nine",0
+    .asciz "nine"
 
 
 inputFilename:
