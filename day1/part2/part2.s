@@ -12,7 +12,7 @@
 
 /* Data segment: define our message string and calculate its length. */
 msg:
-    .ascii "Hello, ARM!\n"
+    .asciz "Hello, ARM!\n"
 len = . - msg
 
 one_str:
@@ -390,11 +390,8 @@ noNumber:
     add x0, x0, #1 // increment input pointer by 1 character
 
 loopFooter:
-    // Stop looping if loop counter higher than buffer size
-    cmp x2, #BUFFER_SIZE
-    bgt end
-
-    cmp	w5, #0 // check if character is null character
+    ldrb w3, [x0] // load character at input pointer into w3
+    cmp	w3, #0 // check if character is null terminator char
 	beq end // end if character isn't null
     b start_one // continue checking and replacing
 
