@@ -91,52 +91,48 @@ main:
 
     mov x2, #0 // x2 is the look ahead offset. reset to zero
 
-.macro checkNum numStr, startLabel, loopLabel, nextLabel, replaceLabel, replaceChar, replaceLen
+//.macro checkNum, numStr, startLabel, loopLabel, nextLabel, replaceLabel, replaceChar, replaceLen
 
-\startLabel:
+.macro checkNum, num, replaceChar, replaceLen
+
+start_\num:
     mov x2, #0 // x2 is the look ahead offset. reset to zero
 
-\loopLabel:
+loop_\num:
     ldr	x1, =\numStr // set x1 to oneStr start address
     ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
     ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
     cmp w4, #0 // check if we've reached end of string
-    beq replaceLabel
+    beq replace_\num
     cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
-    bne \nextLabel
+    bne end_\num
     add x2, x2, #1 // increment offset
-    b \currentLabel
+    b loop_\num
 
-\replaceLabel:
+replace_\num:
     mov w3, \replaceChar
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
     add x0, x0, \replaceLen
     b loopFooter
+
+end_\num:
+    mov x0, x0 // no op
+
 .endm
 
-searchAndReplace:
-
-checkNum oneStr checkOne loopOne checkTwo replaceOne #49 #3
-
-checkNum twoStr checkTwo loopTwo checkThree replaceTwo #50 #3
-
-checkNum threeStr checkThree loopThree checkFour replaceThree #51 #5
-
-checkNum fourStr checkFour loopFour checkFive replaceFour #52 #4
-
-checkNum fiveStr checkFive loopFive checkSix replaceFive #53 #4
-
-checkNum sixStr checkSix loopSix checkSeven replaceSix #54 #3
-
-checkNum sevenStr checkSeven loopSeven checkEight replaceSeven #55 #5
-
-checkNum eightStr checkEight loopEight checkNine replaceEight #56 #5
-
-checkNum nineStr checkNine loopNine loopFooter replaceNine #57 #4
+checkNum one, #49, #3
+checkNum two, #50, #3
+checkNum, three, #51, #5
+checkNum, four, #52, #4
+checkNum, five, #53, #4
+checkNum, six, #54, #3
+checkNum, seven, #55, #5
+checkNum, eight, #56, #5
+checkNum, nine, #57, #4
 
 noNumber:
     strb w3, [x0] // store character at w5 to address at x0 register (output pointer)
-    mov x0, x0, #1 // increment input pointer by 1 character
+    add x0, x0, #1 // increment input pointer by 1 character
     b loopFooter
 
 /* checkOne:
@@ -236,7 +232,7 @@ loopFooter:
 
     cmp	w5, #0 // check if character is null character
 	beq end // end if character isn't null
-    b searchAndReplace
+    b checkOne // continue checking and replacing
 
 end:
 
