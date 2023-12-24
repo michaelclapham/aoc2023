@@ -83,6 +83,7 @@ main:
     mov x8, #64 /* syscall 64 = write */
     svc #0
 
+inputPointers:
     /* input address */
     ldr	x0, =inputBuffer // set x0 to inputBuffer start address
 
