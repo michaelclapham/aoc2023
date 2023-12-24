@@ -383,10 +383,12 @@ replace_nine:
     b loopFooter
 
 end_nine:
-    mov x0, x0 // no op 
+    mov x0, x0 // no op
+    b loopFooter
 
 noNumber:
-    strb w3, [x0] // store character at w5 to address at x0 register (output pointer)
+    strb w3, [x0] // read char at input pointer into w3
+    strb w3, [x6] // store character at w3 to address at x6 register (output pointer)
     add x0, x0, #1 // increment input pointer by 1 character
 
 loopFooter:
