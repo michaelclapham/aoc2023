@@ -85,22 +85,23 @@ checkOne:
     add x2, x2, #2
     // Put '2' into current character register
     mov w5, #49 // ASCII 50 = '1'.
+    b loopFooter
 
 checkTwo:
     mov x4, x2 // x4 is look-ahead address
     // let's use w6 as the look-ahead char value
     cmp w5, #116 // check if w5 is 't'
-    bne loopFooter
+    bne checkThree
     
     add x4, x2, #1 // look to char at + x2 + 1
     ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 1 offset
     cmp w6, #119 // check if w6 is 'w'
-    bne loopFooter
+    bne checkThree
 
     add x4, x2, #2 // look to char at + x2 + 2
     ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 2 offset
     cmp w6, #111 // check if w6 is 'o'
-    bne loopFooter
+    bne checkThree
     
     // We found t,w,o
     // Increase input index by + 2 here
@@ -109,6 +110,43 @@ checkTwo:
     add x2, x2, #2
     // Put '2' into current character register
     mov w5, #50 // ASCII 50 = '2'.
+    b loopFooter
+
+checkThree:
+    mov x4, x2 // x4 is look-ahead address
+    // let's use w6 as the look-ahead char value
+    cmp w5, #116 // check if w5 is 't'
+    bne loopFooter
+    
+    add x4, x2, #1 // look to char at + x2 + 1
+    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 1 offset
+    cmp w6, #104 // check if w6 is 'h'
+    bne loopFooter
+
+    add x4, x2, #2 // look to char at + x2 + 2
+    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 2 offset
+    cmp w6, #114 // check if w6 is 'r'
+    bne loopFooter
+
+    add x4, x2, #3 // look to char at + x2 + 3
+    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 3 offset
+    cmp w6, #101 // check if w6 is 'e'
+    bne loopFooter
+
+
+    add x4, x2, #4 // look to char at + x2 + 4
+    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 4 offset
+    cmp w6, #101 // check if w6 is 'e'
+    bne loopFooter
+    
+    // We found t,h,r,e,e
+    // Increase input index by + 4 here
+    // We always increase by + 1 in loopFooter
+    // so 4 + 1 = length of 'three'
+    add x2, x2, #4
+    // Put '2' into current character register
+    mov w5, #50 // ASCII 50 = '2'.
+    b loopFooter
 
 loopFooter:
     // write x5 to output buffer at output offset (x3)
@@ -145,6 +183,8 @@ end:
     mov x0, x11 // holds input file handle
     mov x8, #57 // syscall 57 = close
     svc 0
+
+exit_prog:
 
     /* syscall exit(int status) */
     mov x0, #42 /* exit value is 42 */
