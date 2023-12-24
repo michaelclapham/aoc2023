@@ -384,7 +384,7 @@ replace_nine:
 
 end_nine:
     mov x0, x0 // no op
-    b loopFooter
+    // at this point, we've failed to find a number string so next up is noNumber
 
 noNumber:
     strb w3, [x0] // read char at input pointer into w3
