@@ -157,7 +157,8 @@ loop_${num}:
 replace_${num}:
     mov w3, #${i + 48} // ${i + 48} is ascii for ${i}
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #${num.length}
+    add x0, x0, #${num.length} // incrementing input pointer by length of ${num} (${num.length})
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_${num}:
@@ -169,6 +170,8 @@ for (var i = 0; i < 9; i++) {
 }
 
  */
+
+// start of search/replace macro section
 
 start_one:
     mov x2, #0 // x2 is the look ahead offset. reset to zero
@@ -187,7 +190,8 @@ loop_one:
 replace_one:
     mov w3, #49 // 49 is ascii for 1
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #3
+    add x0, x0, #3 // incrementing input pointer by length of one (3)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_one:
@@ -211,7 +215,8 @@ loop_two:
 replace_two:
     mov w3, #50 // 50 is ascii for 2
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #3
+    add x0, x0, #3 // incrementing input pointer by length of two (3)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_two:
@@ -235,7 +240,8 @@ loop_three:
 replace_three:
     mov w3, #51 // 51 is ascii for 3
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #5
+    add x0, x0, #5 // incrementing input pointer by length of three (5)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_three:
@@ -259,7 +265,8 @@ loop_four:
 replace_four:
     mov w3, #52 // 52 is ascii for 4
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #4
+    add x0, x0, #4 // incrementing input pointer by length of four (4)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_four:
@@ -283,7 +290,8 @@ loop_five:
 replace_five:
     mov w3, #53 // 53 is ascii for 5
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #4
+    add x0, x0, #4 // incrementing input pointer by length of five (4)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_five:
@@ -307,7 +315,8 @@ loop_six:
 replace_six:
     mov w3, #54 // 54 is ascii for 6
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #3
+    add x0, x0, #3 // incrementing input pointer by length of six (3)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_six:
@@ -331,7 +340,8 @@ loop_seven:
 replace_seven:
     mov w3, #55 // 55 is ascii for 7
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #5
+    add x0, x0, #5 // incrementing input pointer by length of seven (5)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_seven:
@@ -355,7 +365,8 @@ loop_eight:
 replace_eight:
     mov w3, #56 // 56 is ascii for 8
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #5
+    add x0, x0, #5 // incrementing input pointer by length of eight (5)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_eight:
@@ -379,17 +390,20 @@ loop_nine:
 replace_nine:
     mov w3, #57 // 57 is ascii for 9
     strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
-    add x0, x0, #4
+    add x0, x0, #4 // incrementing input pointer by length of nine (4)
+    add x6, x6, #1 // increment output pointer by 1
     b loopFooter
 
 end_nine:
-    mov x0, x0 // no op
-    // at this point, we've failed to find a number string so next up is noNumber
+    mov x0, x0 // no op 
+
+// end of macro section
 
 noNumber:
     strb w3, [x0] // read char at input pointer into w3
     strb w3, [x6] // store character at w3 to address at x6 register (output pointer)
     add x0, x0, #1 // increment input pointer by 1 character
+    add x6, x6, #1 // increment output pointer by 1 character
 
 loopFooter:
     ldrb w3, [x0] // load character at input pointer into w3
