@@ -395,7 +395,7 @@ loopFooter:
 
     cmp	w5, #0 // check if character is null character
 	beq end // end if character isn't null
-    b checkOne // continue checking and replacing
+    b start_one // continue checking and replacing
 
 end:
 
