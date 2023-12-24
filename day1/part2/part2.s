@@ -15,31 +15,31 @@ msg:
     .ascii "Hello, ARM!\n"
 len = . - msg
 
-oneStr:
+one_str:
     .ascii "one"
 
-twoStr:
+two_str:
     .ascii "two"
 
-threeStr:
+three_str:
     .ascii "three"
 
-fourStr:
+four_str:
     .ascii "four"
 
-fiveStr:
+five_str:
     .ascii "five"
 
-sixStr:
+six_str:
     .ascii "six"
 
-sevenStr:
+seven_str:
     .ascii "seven"
 
-eightStr:
+eight_str:
     .ascii "eight"
 
-nineStr:
+nine_str:
     .ascii "nine"
 
 
@@ -93,13 +93,16 @@ main:
 
 //.macro checkNum, numStr, startLabel, loopLabel, nextLabel, replaceLabel, replaceChar, replaceLen
 
+/* attempted macro before I gave up because macro syntax isn't great at combining strings */
+
+/*
 .macro checkNum, num, replaceChar, replaceLen
 
 start_\num:
     mov x2, #0 // x2 is the look ahead offset. reset to zero
 
 loop_\num:
-    ldr	x1, =\numStr // set x1 to oneStr start address
+    ldr	x1, =\num_str // set x1 to oneStr start address
     ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
     ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
     cmp w4, #0 // check if we've reached end of string
@@ -130,100 +133,260 @@ checkNum, seven, #55, #5
 checkNum, eight, #56, #5
 checkNum, nine, #57, #4
 
+*/
+
+/* I used javascript to do a "macro" instead
+
+var checkNum = (num, i) => `
+
+start_${num}:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_${num}:
+    ldr	x1, =${num}_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_${num}
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_${num}
+    add x2, x2, #1 // increment offset
+    b loop_${num}
+
+replace_${num}:
+    mov w3, #${i + 48} // ${i + 48} is ascii for ${i}
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #${num.length}
+    b loopFooter
+
+end_${num}:
+    mov x0, x0 // no op 
+    `
+var numStrs = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+for (var i = 0; i < 9; i++) {
+    console.log(checkNum(numStrs[i], i + 1));
+}
+
+ */
+
+start_one:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_one:
+    ldr	x1, =one_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_one
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_one
+    add x2, x2, #1 // increment offset
+    b loop_one
+
+replace_one:
+    mov w3, #49 // 49 is ascii for 1
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #3
+    b loopFooter
+
+end_one:
+    mov x0, x0 // no op 
+    
+
+start_two:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_two:
+    ldr	x1, =two_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_two
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_two
+    add x2, x2, #1 // increment offset
+    b loop_two
+
+replace_two:
+    mov w3, #50 // 50 is ascii for 2
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #3
+    b loopFooter
+
+end_two:
+    mov x0, x0 // no op 
+    
+
+start_three:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_three:
+    ldr	x1, =three_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_three
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_three
+    add x2, x2, #1 // increment offset
+    b loop_three
+
+replace_three:
+    mov w3, #51 // 51 is ascii for 3
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #5
+    b loopFooter
+
+end_three:
+    mov x0, x0 // no op 
+    
+
+start_four:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_four:
+    ldr	x1, =four_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_four
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_four
+    add x2, x2, #1 // increment offset
+    b loop_four
+
+replace_four:
+    mov w3, #52 // 52 is ascii for 4
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #4
+    b loopFooter
+
+end_four:
+    mov x0, x0 // no op 
+    
+
+start_five:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_five:
+    ldr	x1, =five_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_five
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_five
+    add x2, x2, #1 // increment offset
+    b loop_five
+
+replace_five:
+    mov w3, #53 // 53 is ascii for 5
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #4
+    b loopFooter
+
+end_five:
+    mov x0, x0 // no op 
+    
+
+start_six:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_six:
+    ldr	x1, =six_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_six
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_six
+    add x2, x2, #1 // increment offset
+    b loop_six
+
+replace_six:
+    mov w3, #54 // 54 is ascii for 6
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #3
+    b loopFooter
+
+end_six:
+    mov x0, x0 // no op 
+    
+
+start_seven:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_seven:
+    ldr	x1, =seven_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_seven
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_seven
+    add x2, x2, #1 // increment offset
+    b loop_seven
+
+replace_seven:
+    mov w3, #55 // 55 is ascii for 7
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #5
+    b loopFooter
+
+end_seven:
+    mov x0, x0 // no op 
+    
+
+start_eight:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_eight:
+    ldr	x1, =eight_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_eight
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_eight
+    add x2, x2, #1 // increment offset
+    b loop_eight
+
+replace_eight:
+    mov w3, #56 // 56 is ascii for 8
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #5
+    b loopFooter
+
+end_eight:
+    mov x0, x0 // no op 
+    
+
+start_nine:
+    mov x2, #0 // x2 is the look ahead offset. reset to zero
+
+loop_nine:
+    ldr	x1, =nine_str // set x1 to oneStr start address
+    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
+    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
+    cmp w4, #0 // check if we've reached end of string
+    beq replace_nine
+    cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
+    bne end_nine
+    add x2, x2, #1 // increment offset
+    b loop_nine
+
+replace_nine:
+    mov w3, #57 // 57 is ascii for 9
+    strb w3, [x6] // store character at w5 to address at x6 register (output pointer)
+    add x0, x0, #4
+    b loopFooter
+
+end_nine:
+    mov x0, x0 // no op 
+
 noNumber:
     strb w3, [x0] // store character at w5 to address at x0 register (output pointer)
     add x0, x0, #1 // increment input pointer by 1 character
-    b loopFooter
-
-/* checkOne:
-    ldr	x1, =oneStr // set x1 to oneStr start address
-    mov x2, #0 // x2 is the look ahead offset. reset to zero
-    ldrb w3, [x0, x2] // load lookahead from input at x0 + x2 offset into w3
-    ldrb w4, [x1, x2] // load number string from at x1 + x2 offset into w4
-    cmp w3, w4 // check if w5 is 'o'
-    bne checkTwo
-    
-    add x2, x2, #1 // increase lookahead by 1
-    ldrb w5, [x0, x2] // load character / byte from address at x0 + x2 offset
-    cmp w5, #119 // check if w6 is 'n'
-    bne checkTwo
-
-    add x4, x2, #2 // look to char at + x2 + 2
-    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 2 offset
-    cmp w6, #101 // check if w6 is 'e'
-    bne checkTwo
-    
-    // We found o,n,e
-    // Increase input index by + 2 here
-    // We always increase by + 1 in loopFooter
-    // so 2 + 1 = length of 'one'
-    add x2, x2, #2
-    // Put '2' into current character register
-    mov w5, #49 // ASCII 50 = '1'.
-    b loopFooter
-
-checkTwo:
-    mov x4, x2 // x4 is look-ahead address
-    // let's use w6 as the look-ahead char value
-    cmp w5, #116 // check if w5 is 't'
-    bne checkThree
-    
-    add x4, x2, #1 // look to char at + x2 + 1
-    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 1 offset
-    cmp w6, #119 // check if w6 is 'w'
-    bne checkThree
-
-    add x4, x2, #2 // look to char at + x2 + 2
-    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 2 offset
-    cmp w6, #111 // check if w6 is 'o'
-    bne checkThree
-    
-    // We found t,w,o
-    // Increase input index by + 2 here
-    // We always increase by + 1 in loopFooter
-    // so 2 + 1 = length of 'two'
-    add x2, x2, #2
-    // Put '2' into current character register
-    mov w5, #50 // ASCII 50 = '2'.
-    b loopFooter
-
-checkThree:
-    mov x4, x2 // x4 is look-ahead address
-    // let's use w6 as the look-ahead char value
-    cmp w5, #116 // check if w5 is 't'
-    bne loopFooter
-    
-    add x4, x2, #1 // look to char at + x2 + 1
-    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 1 offset
-    cmp w6, #104 // check if w6 is 'h'
-    bne loopFooter
-
-    add x4, x2, #2 // look to char at + x2 + 2
-    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 2 offset
-    cmp w6, #114 // check if w6 is 'r'
-    bne loopFooter
-
-    add x4, x2, #3 // look to char at + x2 + 3
-    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 3 offset
-    cmp w6, #101 // check if w6 is 'e'
-    bne loopFooter
-
-
-    add x4, x2, #4 // look to char at + x2 + 4
-    ldrb w6, [x0, x4] // load character / byte from address at x0 + x2 + 4 offset
-    cmp w6, #101 // check if w6 is 'e'
-    bne loopFooter
-    
-    // We found t,h,r,e,e
-    // Increase input index by + 4 here
-    // We always increase by + 1 in loopFooter
-    // so 4 + 1 = length of 'three'
-    add x2, x2, #4
-    // Put '2' into current character register
-    mov w5, #50 // ASCII 50 = '2'.
-    b loopFooter
-
-*/
 
 loopFooter:
     // Stop looping if loop counter higher than buffer size
