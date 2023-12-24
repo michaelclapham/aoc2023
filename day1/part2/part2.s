@@ -12,7 +12,7 @@
 
 /* Data segment: define our message string and calculate its length. */
 msg:
-    .asciz "Hello, ARM!\n"
+    .asciz "\n"
 len = . - msg
 
 one_str:
