@@ -41,33 +41,34 @@ Begin
 
     turns := after.Split([';']);
     for turn in turns do
-      WriteLn('turn ', turn);
-      draws := turn.Split([',']);
-
-      // Find maximum red, green, and blue counts
-      for draw in draws do
       begin
-        WriteLn('draw ', draw);
-        if Pos('red', draw) > 0 then
+        WriteLn('turn ', turn);
+        draws := turn.Split([',']);
+
+        // Find maximum red, green, and blue counts
+        for draw in draws do
         begin
-          num := StrToInt(Trim(StringReplace(draw, 'red', '', [rfReplaceAll, rfIgnoreCase])));
-          WriteLn('red num ', num);
-          if num > redMax then redMax := num;
-        end;
-        if Pos('green', draw) > 0 then
-        begin
-          num := StrToInt(Trim(StringReplace(draw, 'green', '', [rfReplaceAll, rfIgnoreCase])));
-          WriteLn('green num ', num);
-          if num > greenMax then greenMax := num;
-        end;
-        if Pos('blue', draw) > 0 then
-        begin
-          num := StrToInt(Trim(StringReplace(draw, 'blue', '', [rfReplaceAll, rfIgnoreCase])));
-          WriteLn('blue num ', num);
-          if num > blueMax then blueMax := num;
+          WriteLn('draw ', draw);
+          if Pos('red', draw) > 0 then
+          begin
+            num := StrToInt(Trim(StringReplace(draw, 'red', '', [rfReplaceAll, rfIgnoreCase])));
+            WriteLn('red num ', num);
+            if num > redMax then redMax := num;
+          end;
+          if Pos('green', draw) > 0 then
+          begin
+            num := StrToInt(Trim(StringReplace(draw, 'green', '', [rfReplaceAll, rfIgnoreCase])));
+            WriteLn('green num ', num);
+            if num > greenMax then greenMax := num;
+          end;
+          if Pos('blue', draw) > 0 then
+          begin
+            num := StrToInt(Trim(StringReplace(draw, 'blue', '', [rfReplaceAll, rfIgnoreCase])));
+            WriteLn('blue num ', num);
+            if num > blueMax then blueMax := num;
+          end;
         end;
       end;
-
     WriteLn('red max ', redMax);
     WriteLn('green max ', greenMax);
     WriteLn('blue max ', greenMax);
@@ -76,8 +77,10 @@ Begin
     possible := (redMax <= redConstraint) and (greenMax <= greenConstraint) and (blueMax <= blueConstraint);
 
     if possible then
+    begin
       WriteLn('game is possible: ', gameNum);
       total := total + gameNum;
+    end;
 
   end;
 
