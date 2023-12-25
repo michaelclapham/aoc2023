@@ -6,7 +6,7 @@
 .equ	AT_FDCWD, -100
 
 /* buffer size */
-.equ	BUFFER_SIZE, 92
+.equ	BUFFER_SIZE, 21462
 
 .data
 
@@ -44,7 +44,7 @@ nine_str:
 
 
 inputFilename:
-    .ascii "./sample_input.txt"
+    .ascii "../input.txt"
 
 inputBuffer:
     .fill BUFFER_SIZE + 1, 1, 0
