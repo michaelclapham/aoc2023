@@ -18,12 +18,8 @@ Docs on how I setup QEMU are [here](./day1/part2/qemu_readme.md)
 
 # Day 2
 
-Considering using Haskell.
+Using (free Pascal)
 
-Command to install...
+Install Free Pascal using `sudo apt-get install lazarus`
 
-`curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh` to install Haskell
-
-Oooh a nice video on what Monads are:
-https://www.youtube.com/watch?v=Q0aVbqim5pE
-https://www.reddit.com/r/Python/comments/17sxjdy/what_the_heck_are_monads/
+`fpc part1.pas -g && cat input.txt | ./part1` to build and run
