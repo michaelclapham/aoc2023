@@ -11,24 +11,9 @@
 /* Data segment. */
 .data
 
-// The final total
-total:  
-    .quad 0
-
-inputPointer:  
-    .quad 0
-
 msg:
     .asciz "\n"
 len = . - msg
-
-finalTotalMsg:
-    .asciz "Line total: "
-finalTotalMsgLen = . - finalTotalMsg
-
-lineTotalMsg:
-    .asciz "Line total: "
-lineTotalMsgLen = . - lineTotalMsg
 
 foundDigitMsg:
     .asciz "Found digit: "
@@ -111,26 +96,27 @@ main:
 
 /*
     From this point forward
-    x0 - used for input pointer
+    x10 - used for input pointer
     x11 - used for number of digits found on line
     x12 - used for first digit found
     x13 - used for second digit found
+    x14 - used for line total
+    x15 - used for final total
  */
 setupRegisters:
     /* input address */
-    ldr	x0, =inputBuffer // set x0 to inputBuffer start address
-    str x0, =inputPointer // set input pointer to adress we just loaded into x0
+    ldr	x10, =inputBuffer // set x10 to inputBuffer start address
     mov x11, #0
     mov x12, #0
     mov x13, #0 
 
 checkForNewLine:
-    ldrb w3, [x0] // load input at x0 into w3
+    ldrb w3, [x10] // load input at x10 into w3
     cmp w3, #10 // check if new line character
     beq onNewLine
 
 checkForDigit:
-    ldrb w3, [x0] // load input at x0 into w3
+    ldrb w3, [x10] // load input at x10 into w3
     cmp w3, #57 // ascii 57 = 9.
     bgt matchStringNumbers // if greater than '9', not a digit
     cmp w3, #48 // ascii 48 = 0
@@ -162,6 +148,8 @@ checkForDigit:
 
 \endLabel:
     mov x0, x0 // no op
+
+.endm
 
 /* Here we call the macro 9 times to generate assembly that
 matches each string digit 'one', 'two', 'three' etc.
@@ -229,15 +217,11 @@ onMultiDigitLine:
     add x14, x14, x13 // x14 += x13 (second digit)
 
 addToTotal:
-    ldr x15, =total
     add x15, x15, x14
-    str x15, =total
 
 nextChar:
-    ldr x0, =inputPointer
-    add x0, x0, #1 // increment input pointer by 1 character
-    str x0, =inputPointer
-    ldrb w3, [x0] // load character at input pointer into w3
+    add x10, x10, #1 // increment input pointer by 1 character
+    ldrb w3, [x10] // load character at input pointer into w3
     cmp	w3, #0 // check if character is null terminator char
 	beq end // end if character is null
     b checkForNewLine // else continue checking and replacing
