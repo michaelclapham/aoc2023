@@ -197,10 +197,12 @@ onDigit:
     b onOtherDigit
 
 onFirstDigit:
-    mov x12, w3
+    mov x12, #0
+    mov w12, w3
 
 onOtherDigit:
-    mov x13, w3
+    mov x13, #0
+    mov w13, w3
 
 
 onNewLine:
