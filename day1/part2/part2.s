@@ -215,7 +215,7 @@ onOneDigitLine:
 
 onMultiDigitLine:
     mov x0, #10
-    mul x14, x12, #10 // x14 = x12 (first digit) * x0 (10)
+    mul x14, x12, x0 // x14 = x12 (first digit) * x0 (10)
     add x14, x14, x13 // x14 = x14 + x13 (first digit * 10 + second digit) 
 
 addToTotal:
