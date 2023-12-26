@@ -185,7 +185,7 @@ onDigit:
     svc #0
 
     mov x0, #1 /* file descriptor 1 = standard out = console */
-    adr x1, x3
+    adr x1, w3
     mov x2, foundDigitMsgLen /* Number of bytes / characters in ascii string */
     mov x8, #64 /* syscall 64 = write */
     svc #0
@@ -197,10 +197,10 @@ onDigit:
     b onOtherDigit
 
 onFirstDigit:
-    mov x12, x3
+    mov x12, w3
 
 onOtherDigit:
-    mov x13, x3
+    mov x13, w3
 
 
 onNewLine:
