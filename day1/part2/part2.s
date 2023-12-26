@@ -19,31 +19,31 @@ foundDigitMsg:
     .asciz "Found digit: "
 foundDigitMsgLen = . - foundDigitMsg
 
-one_str:
+oneStr:
     .asciz "one"
 
-two_str:
+twoStr:
     .asciz "two"
 
-three_str:
+threeStr:
     .asciz "three"
 
-four_str:
+fourStr:
     .asciz "four"
 
-five_str:
+fiveStr:
     .asciz "five"
 
-six_str:
+sixStr:
     .asciz "six"
 
-seven_str:
+sevenStr:
     .asciz "seven"
 
-eight_str:
+eightStr:
     .asciz "eight"
 
-nine_str:
+nineStr:
     .asciz "nine"
 
 
