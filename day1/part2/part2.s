@@ -139,7 +139,7 @@ checkForDigit:
     cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
     bne \endLabel
     add x2, x2, #1 // increment offset
-    b loop_\num
+    b \loopLabel
 
 \foundLabel:
     mov w3, \intValue // move int value into w3 e.g 0
@@ -225,17 +225,8 @@ nextChar:
     add x10, x10, #1 // increment input pointer by 1 character
     ldrb w3, [x10] // load character at input pointer into w3
     cmp	w3, #0 // check if character is null terminator char
-	beq end // end if character is null
+	beq exit_prog // end if character is null
     b checkForNewLine // else continue checking and replacing
-
-end:
-
-    /* syscall write */
-    mov x0, #1 /* file descriptor 1 = standard out = console */
-    adr x1, lineTotalMsg
-    mov x2, lineTotalMsgLen /* Number of bytes / characters in ascii string */
-    mov x8, #64 /* syscall 64 = write */
-    svc #0
 
 exit_prog:
     ldr x15, =total
