@@ -209,12 +209,14 @@ onNewLine:
     b onMultiDigitLine
     
 onOneDigitLine:
-    mul x14, x12, #11
+    mov x0, #11
+    mul x14, x12, x0 // x14 = x12 (first digit) * x0 (11)
     b addToTotal
 
 onMultiDigitLine:
-    mul x14, x12, #10 // x14 = x12 (first digit) * 10
-    add x14, x14, x13 // x14 += x13 (second digit)
+    mov x0, #10
+    mul x14, x12, #10 // x14 = x12 (first digit) * x0 (10)
+    add x14, x14, x13 // x14 = x14 + x13 (first digit * 10 + second digit) 
 
 addToTotal:
     add x15, x15, x14
