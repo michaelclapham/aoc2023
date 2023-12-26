@@ -251,16 +251,10 @@ end:
     mov x8, #64 /* syscall 64 = write */
     svc #0
 
-    /* write to std-out the outputBuffer (which should be the same as file just read in) */
-    mov x0, #1 /* file descriptor 1 = standard out = console */
-    ldr x1, =outputBuffer
-    mov x2, BUFFER_SIZE /* Number of bytes / characters in ascii string */
-    mov x8, #64 /* syscall 64 = write */
-    svc #0
-
 exit_prog:
+    ldr x15, =total
 
     /* syscall exit(int status) */
-    mov x0, #42 /* exit value is 42 */
+    mov x0, x15 /* exit value is the total */
     mov x8, #93 /* syscall 93 = exit */
     svc #0
