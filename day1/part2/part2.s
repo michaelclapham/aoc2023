@@ -190,12 +190,6 @@ onDigit:
     mov x8, #64 /* syscall 64 = write */
     svc #0
 
-    mov x0, #1 /* file descriptor 1 = standard out = console */
-    adr x1, x3
-    mov x2, foundDigitMsgLen /* Number of bytes / characters in ascii string */
-    mov x8, #64 /* syscall 64 = write */
-    svc #0
-
     sub w3, w3, #48 // minus 48 from w3 to get integer digit
     add x5, x5, #1 // increase number of digits found on the line
     cmp x5, #1
