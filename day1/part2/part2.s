@@ -11,6 +11,12 @@
 /* Data segment. */
 .data
 
+lineTotal:
+    .byte 0
+
+total:
+    .int 0
+
 msg:
     .asciz "\n"
 len = . - msg
@@ -96,19 +102,19 @@ main:
 
 /*
     From this point forward
+    x5 - used for number of digits found on line
+    x6 - used for first digit found
+    x7 - used for second digit found
+    x9 - used for line total
     x10 - used for input pointer
-    x11 - used for number of digits found on line
-    x12 - used for first digit found
-    x13 - used for second digit found
-    x14 - used for line total
-    x15 - used for final total
  */
 setupRegisters:
     /* input address */
     ldr	x10, =inputBuffer // set x10 to inputBuffer start address
-    mov x11, #0
-    mov x12, #0
-    mov x13, #0 
+    mov x5, #0
+    mov x6, #0
+    mov x7, #0 
+    mov x9, #0
 
 checkForNewLine:
     ldrb w3, [x10] // load input at x10 into w3
@@ -131,7 +137,7 @@ checkForDigit:
     mov x2, #0 // x2 is the look ahead offset. reset to zero
 
 \loopLabel:
-    ldr	x1, =\numStr // set x1 to number string start address
+    ldr	x0, =\numStr // set x0 to number string start address
     ldrb w3, [x0, x2] // load input + x2 offset into w3
     ldrb w4, [x1, x2] // load number string + x2 offset into w4
     cmp w4, #0 // check if we've reached end of string
@@ -185,43 +191,44 @@ onDigit:
     svc #0
 
     mov x0, #1 /* file descriptor 1 = standard out = console */
-    adr x1, w3
+    adr x1, x3
     mov x2, foundDigitMsgLen /* Number of bytes / characters in ascii string */
     mov x8, #64 /* syscall 64 = write */
     svc #0
 
     sub w3, w3, #48 // minus 48 from w3 to get integer digit
-    add x11, x11, #1 // increase number of digits found on the line
-    cmp x11, #1
-    beq onFirstDigit // if x11 = 1 then this is first digit on the line
+    add x5, x5, #1 // increase number of digits found on the line
+    cmp x5, #1
+    beq onFirstDigit // if x5 = 1 then this is first digit on the line
     b onOtherDigit
 
 onFirstDigit:
-    mov x12, #0
-    mov w12, w3
+    mov w6, w3
 
 onOtherDigit:
-    mov x13, #0
-    mov w13, w3
+    mov w7, w3
 
 
 onNewLine:
-    cmp x11, #1
+    cmp x5, #1
     beq onOneDigitLine
     b onMultiDigitLine
     
 onOneDigitLine:
     mov x0, #11
-    mul x14, x12, x0 // x14 = x12 (first digit) * x0 (11)
+    mul x9, x6, x0 // x9 = x6 (first digit) * x0 (11)
     b addToTotal
 
 onMultiDigitLine:
     mov x0, #10
-    mul x14, x12, x0 // x14 = x12 (first digit) * x0 (10)
+    mul x9, x12, x0 // x9 = x12 (first digit) * x0 (10)
     add x14, x14, x13 // x14 = x14 + x13 (first digit * 10 + second digit) 
 
 addToTotal:
-    add x15, x15, x14
+    ldr	x0, =total // load address of total into x0
+    ldr x1, [x0] // load value at x0 (total) into x1
+    add x1, x1, x9 // add x9 (line total) to x1 (final total)
+    str x1, [x0] // store register x1 to address at x0 (total)
 
 nextChar:
     add x10, x10, #1 // increment input pointer by 1 character
@@ -233,7 +240,10 @@ nextChar:
 exit_prog:
     ldr x15, =total
 
+    ldr	x1, =total // load address of total into x1
+    ldr x0, [x1] // load value at x1 (total) into x0
+
     /* syscall exit(int status) */
-    mov x0, x15 /* exit value is the total */
+    // x0 loaded above will be used as exit value
     mov x8, #93 /* syscall 93 = exit */
     svc #0
