@@ -48,7 +48,7 @@ nineStr:
     .asciz "nine"
 
 totalMsgFormat:
-    .ascii "Total is %i "
+    .asciz "%d \n"
 
 inputFilename:
     .ascii "../input.txt"
@@ -239,7 +239,8 @@ exit_prog:
     ldr x0, =totalMsgFormat // put address of totalMsgFormat into x0 register
     bl printf // calls printf(x0, x1) = printf (total, &totalMsgFormat)
 
+exit_after_print:
     // syscall exit(int status)
-    mov x0, x11
+    mov x0, #0
     mov x8, #93 // syscall 93 = exit
     svc #0
