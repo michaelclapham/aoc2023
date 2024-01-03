@@ -6,7 +6,10 @@
 .equ	AT_FDCWD, -100
 
 /* buffer size */
-.equ	BUFFER_SIZE, 21462
+.equ	BUFFER_SIZE, 22462
+
+// Define printf as an external function
+.extern printf
 
 /* Data segment. */
 .data
@@ -16,14 +19,6 @@ lineTotal:
 
 total:
     .int 0
-
-msg:
-    .asciz "\n"
-len = . - msg
-
-foundDigitMsg:
-    .asciz "Found digit: "
-foundDigitMsgLen = . - foundDigitMsg
 
 oneStr:
     .asciz "one"
@@ -52,6 +47,8 @@ eightStr:
 nineStr:
     .asciz "nine"
 
+totalMsgFormat:
+    .ascii "Total is %i "
 
 inputFilename:
     .ascii "../input.txt"
@@ -83,38 +80,44 @@ main:
     mov x8, #63
     svc 0
 
-    //fsync syscall
+    mov x9, x0 // save x0 for later 
+
+    // fsync syscall
     mov x0, x11 // holds input file handle
     mov x8, #82 // syscall 92 = fsync
     svc 0
 
-    //close syscall
+    // close syscall
     mov x0, x11 // holds input file handle
     mov x8, #57 // syscall 57 = close
     svc 0
 
-    /* syscall write */
-    mov x0, #1 /* file descriptor 1 = standard out = console */
-    adr x1, msg
-    mov x2, #12 /* Number of bytes / characters in ascii string */
-    mov x8, #64 /* syscall 64 = write */
-    svc #0
+    // syscall write input buffer to std out
+    //mov x0, #1 /* file descriptor 1 = standard out = console */
+    //adr x1, inputBuffer
+    //mov x2, x9 /* Number of bytes / characters in ascii string */
+    //mov x8, #64 /* syscall 64 = write */
+    //svc #0
 
 /*
     From this point forward
+    x3 - (lower 2 bytes) used for current character
     x5 - used for number of digits found on line
     x6 - used for first digit found
     x7 - used for second digit found
-    x9 - used for line total
     x10 - used for input pointer
+    x11 - used for final total
  */
+
+
 setupRegisters:
-    /* input address */
+    // input address
     ldr	x10, =inputBuffer // set x10 to inputBuffer start address
+    mov x11, #0
+    mov x3, #0 // set x3 to zero so that all bits are zero
     mov x5, #0
     mov x6, #0
     mov x7, #0 
-    mov x9, #0
 
 checkForNewLine:
     ldrb w3, [x10] // load input at x10 into w3
@@ -137,8 +140,8 @@ checkForDigit:
     mov x2, #0 // x2 is the look ahead offset. reset to zero
 
 \loopLabel:
-    ldr	x0, =\numStr // set x0 to number string start address
-    ldrb w3, [x0, x2] // load input + x2 offset into w3
+    ldr	x1, =\numStr // set x0 to number string start address
+    ldrb w3, [x10, x2] // load input + x2 offset into w3
     ldrb w4, [x1, x2] // load number string + x2 offset into w4
     cmp w4, #0 // check if we've reached end of string
     beq \foundLabel // we have and therefore have found a match!
@@ -167,6 +170,7 @@ var output = ["one", "two", "three", "four", "five", "six", "seven", "eight", "n
 console.log(output)
 
 */
+
 matchStringNumbers: 
 
 matchNum oneStr, one_start, one_loop, one_found, one_end, #1
@@ -191,9 +195,11 @@ onDigit:
 
 onFirstDigit:
     mov w6, w3
+    b nextChar
 
 onOtherDigit:
     mov w7, w3
+    b nextChar
 
 
 onNewLine:
@@ -201,36 +207,39 @@ onNewLine:
     beq onOneDigitLine
     b onMultiDigitLine
     
+// From this point forward x2 is line total
 onOneDigitLine:
     mov x0, #11
-    mul x9, x6, x0 // x9 = x6 (first digit) * x0 (11)
+    mul x2, x6, x0 // x2 = x6 (first digit) * x0 (11)
     b addToTotal
 
 onMultiDigitLine:
     mov x0, #10
-    mul x9, x12, x0 // x9 = x12 (first digit) * x0 (10)
-    add x14, x14, x13 // x14 = x14 + x13 (first digit * 10 + second digit) 
+    mul x2, x6, x0 // x9 = x6 (first digit) * x0 (10)
+    add x2, x2, x7 // x14 = x14 + x13 (first digit * 10 + second digit) 
 
 addToTotal:
     ldr	x0, =total // load address of total into x0
-    ldr x1, [x0] // load value at x0 (total) into x1
-    add x1, x1, x9 // add x9 (line total) to x1 (final total)
-    str x1, [x0] // store register x1 to address at x0 (total)
+    //ldr x1, [x0] // load value at x0 (total) into x1
+    add x11, x11, x2 // add x2 (line total) to x11 (final total)
+    str x1, [x0] // store register x1 (total + line total) to address at x0 (total)
 
 nextChar:
     add x10, x10, #1 // increment input pointer by 1 character
+    mov x3, #0 // set x3 to zero so that all bits are zero
     ldrb w3, [x10] // load character at input pointer into w3
     cmp	w3, #0 // check if character is null terminator char
 	beq exit_prog // end if character is null
     b checkForNewLine // else continue checking and replacing
 
 exit_prog:
-    ldr x15, =total
+    //ldr	x0, =total // load address of total into x1
+    //ldr x1, [x0] // load value at x0 (total) into x1
+    mov x1, x11 // move x11 (final total) into x1 as it's 2nd arg of printf
+    ldr x0, =totalMsgFormat // put address of totalMsgFormat into x0 register
+    bl printf // calls printf(x0, x1) = printf (total, &totalMsgFormat)
 
-    ldr	x1, =total // load address of total into x1
-    ldr x0, [x1] // load value at x1 (total) into x0
-
-    /* syscall exit(int status) */
-    // x0 loaded above will be used as exit value
-    mov x8, #93 /* syscall 93 = exit */
+    // syscall exit(int status)
+    mov x0, x11
+    mov x8, #93 // syscall 93 = exit
     svc #0
