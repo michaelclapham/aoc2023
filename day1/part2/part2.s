@@ -138,11 +138,13 @@ checkForDigit:
 
 \startLabel:
     mov x2, #0 // x2 is the look ahead offset. reset to zero
+    mov x1, #0 // x1 is the address of the digit in the number we're searching for
 
 \loopLabel:
     ldr	x1, =\numStr // set x0 to number string start address
+    add x1, x1, x2
     ldrb w3, [x10, x2] // load input + x2 offset into w3
-    ldrb w4, [x1, x2] // load number string + x2 offset into w4
+    ldrb w4, [x1] // load number string + x2 offset into w4
     cmp w4, #0 // check if we've reached end of string
     beq \foundLabel // we have and therefore have found a match!
     cmp w3, w4 // check if w3 (lookahead on input) equals w4 (number string + offset)
@@ -209,20 +211,19 @@ onNewLine:
     
 // From this point forward x2 is line total
 onOneDigitLine:
+    mov x5, #0 // reset number of digits on line to zero
     mov x0, #11
     mul x2, x6, x0 // x2 = x6 (first digit) * x0 (11)
     b addToTotal
 
 onMultiDigitLine:
+    mov x5, #0 // reset number of digits on line to zero
     mov x0, #10
     mul x2, x6, x0 // x9 = x6 (first digit) * x0 (10)
     add x2, x2, x7 // x14 = x14 + x13 (first digit * 10 + second digit) 
 
 addToTotal:
-    ldr	x0, =total // load address of total into x0
-    //ldr x1, [x0] // load value at x0 (total) into x1
     add x11, x11, x2 // add x2 (line total) to x11 (final total)
-    str x1, [x0] // store register x1 (total + line total) to address at x0 (total)
 
 nextChar:
     add x10, x10, #1 // increment input pointer by 1 character
